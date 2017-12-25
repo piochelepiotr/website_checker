@@ -4,6 +4,7 @@ import requests
 import threading
 import bisect
 import time
+import cmd
 
 def group_list(L):
     d = {}
@@ -130,6 +131,55 @@ commands["display"] = Manage_websites.display_websites
 commands["exit"] = exit_program
 websites = Manage_websites()
 
+class MainShell(cmd.Cmd):
+    intro = "Welcome to the main shell, Type help or ? to list commands.\n"
+    prompt = ">>>"
+    file = None
+    def do_add(self, arg):
+        """add a website to the list of websites to check.
+        use : add name url check_interval"""
+        try:
+            Manage_websites.add_website(websites,*arg.split())
+        except Exception as e:
+            print("Wrong use of command")
+            print(e)
+
+    def do_remove(self, arg):
+        """remove a website from the list of websites to check.
+        use : remove name"""
+        try:
+            Manage_websites.remove_website(websites,*arg.split())
+        except Exception as e:
+            print("Wrong use of command")
+            print(e)
+
+    def do_change_url(self, arg):
+        """change the url of the website
+        use : change_url name new_url"""
+        try:
+            Manage_websites.change_url(websites,*arg.split())
+        except Exception as e:
+            print("Wrong use of command")
+            print(e)
+
+    def do_change_check_interval(self, arg):
+        """change the period between two checks
+        use : change_check_interval name new_check_interval"""
+        try:
+            Manage_websites.change_check_interval(websites,*arg.split())
+        except Exception as e:
+            print("Wrong use of command")
+            print(e)
+
+    def do_display(self, arg):
+        """Displays all the websites checked by the program
+        use : display"""
+        try:
+            Manage_websites.display_websites(websites,*arg.split())
+        except Exception as e:
+            print("Wrong use of command")
+            print(e)
+
 def analyse_command(command):
     """analyse user's input and execute command given by the user"""
     words = command.split(" ")
@@ -154,4 +204,5 @@ def main():
         print()
 
 if __name__ == "__main__":
-    main()
+    #main()
+    MainShell().cmdloop()
