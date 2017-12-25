@@ -1,5 +1,6 @@
 #! /usr/bin/python3
 
+
 class Response:
     """this class describes a response of a website,
     it includes the response code, the response time
