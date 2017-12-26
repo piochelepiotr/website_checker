@@ -1,0 +1,2 @@
+# This file should contain this line plus a line with all the http responses that mean the website is ok separated by commas
+200, 300, 206

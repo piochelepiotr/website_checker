@@ -31,11 +31,12 @@ class Website:
     it can then provide information on a website availability and
     response time"""
 
-    def __init__(self, url, check_interval):
+    def __init__(self, url, check_interval, ok_responses):
         """inits a website checker with an url and
         a check_interval : time between two checks"""
         self.url = url
         self.check_interval = check_interval
+        self.ok_responses = ok_responses
         self.responses = []
         self.valid_website = True
         self.lock = threading.Lock()
@@ -43,11 +44,16 @@ class Website:
                 target=Website.run_check, args=(self,))
         self.thread_check.daemon = True
         self.thread_check.start()
+        if not self.check():
+            print("Impossible to reach Website, are you sure of the URL ?")
 
     def change_url(self, url):
         """change the url of the website"""
         self.valid_website = True
         self.url = url
+        self.responses = []
+        if not self.check():
+            print("Impossible to reach Website, are you sure of the URL ?")
 
     def change_check_interval(self, check_interval):
         """change the time between two checks"""
@@ -59,12 +65,15 @@ class Website:
         try:
             r = requests.get(self.url)
         except requests.exceptions.MissingSchema:
-            print("URL {} is invalid, you need to change it.".format(self.url))
             self.valid_website = False
-            return
+            return False
+        except requests.exceptions.ConnectionError:
+            self.valid_website = False
+            return False
         self.responses.append(response.Response(
             r.elapsed.total_seconds(),
             int(r.status_code), time.time()))
+        return True
 
     def run_check(self):
         """thread that checks regulary if the website is down or not"""
@@ -86,7 +95,8 @@ class Website:
         responses = self.responses[start_index:]
         resp_codes = [response.reponse_code for response in self.responses]
         error_codes = group_list(resp_codes)
-        availability = error_codes[200] / sum(error_codes.values) * 100
+        sum_ok = sum([error_codes[code] for code in self.ok_responses if code in error_codes])
+        availability = sum_ok / sum(error_codes.values) * 100
         resp_times = [response.respnse_time for response in responses]
         avg_resp_time = sum(resp_times)/len(resp_times)
         min_resp_time = min(resp_times)
@@ -97,7 +107,7 @@ class Website:
 
     def __repr__(self):
         """return an str representing the website"""
-        return "{} , check : {}, status : {}".format(
+        return "{}, check : {}s, status : {}".format(
                 self.url,
                 self.check_interval,
                 "ok" if self.valid_website else "invalid url")
