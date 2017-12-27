@@ -31,7 +31,7 @@ class Manage_websites:
             print_info("Website {} already exists.".format(name))
         else:
             self.websites[name] = website.Website(
-                    url, int(check_interval), self.config)
+                    name, url, int(check_interval), self.config)
 
     def remove_website(self, name):
         """remove a website from the list of websites to check.
@@ -61,27 +61,27 @@ class Manage_websites:
         """Displays all the websites checked by the program
         use : display"""
         for name in self.websites:
-            print_info("{} : {}".format(name, str(self.websites[name])))
+            print_info(str(self.websites[name]))
 
     def disp_short_period(self):
         """thread that every 10s,
         displays the stats for each website for the last 10m"""
         while True:
             if len(self.websites) > 0:
-                print_info("Statistics for the last 10m")
+                print_info("\nStatistics for the last 10m")
             for name in self.websites:
                 stats = self.websites[name].get_stats(10*60)
                 website.print_website_stats(name, *stats)
                 #if availability is greater than 80% and status = not ok, then put the status at ok and print
                 #if availability is lower than 80% and status = ok, then put the status at not ok and print
-            time.sleep(10)
+            time.sleep(2)
 
     def disp_long_period(self):
         """thread that every 1m,
         displays the stats for each website for the last hour"""
         while True:
             if len(self.websites) > 0:
-                print_info("Statistics for the last hour")
+                print_info("\nStatistics for the last hour")
             for name in self.websites:
                 stats = self.websites[name].get_stats(60*60)
                 website.print_website_stats(name, *stats)

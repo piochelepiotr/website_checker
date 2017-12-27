@@ -38,13 +38,11 @@ class CommandLine(urwid.Edit):
         L = command.split(" ")
         if len(L) == 0 or L[0] == "help":
             self.help()
-        elif L[0] == "exit":
-            exit()
         elif L[0] in self.commands:
             try:
                 self.commands[L[0]](self.websites, *L[1:])
-            except KeyError:
+            except TypeError:
                 print_info("Invalid use of command")
         else:
-            print_info("Command does not exist")
+            print_info("Command {} does not exist".format(L[0]))
 
