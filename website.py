@@ -6,6 +6,7 @@ import time
 import response
 import bisect
 from prints import print_info
+from prints import print_command
 from prints import print_alert
 
 
@@ -55,7 +56,7 @@ class Website:
         self.thread_check.daemon = True
         self.thread_check.start()
         if not self.check():
-            print_info("Impossible to reach Website, check the URL and your internet connection")
+            print_command("Impossible to reach Website, check the URL and your internet connection")
 
     def change_url(self, url):
         """change the url of the website"""
@@ -64,12 +65,12 @@ class Website:
         self.responses = []
         self.available = True
         if not self.check():
-            print_info("Impossible to reach Website, check the URL and your internet connection")
+            print_command("Impossible to reach Website, check the URL and your internet connection")
 
     def change_check_interval(self, check_interval):
         """change the time between two checks"""
         if check_interval <= 0:
-            print_info("Minimum check interval = 1s")
+            print_command("Minimum check interval = 1s")
             check_interval = 1
         self.check_interval = check_interval
 
@@ -93,12 +94,14 @@ class Website:
         return int(r.status_code) in self.ok_responses
 
     def check_available(self):
+        """check if the availability of the website is still
+        above 80 (or still bellow according to self.available)"""
         availability, err, avg, m, M = self.get_stats(60*2)
         if availability > 80 and  not self.available:
-            print_alert("Website {} is once again available".format(self.name))
+            print_alert("Website {} is once again available, availability : {}%".format(self.name, int(availability)))
             self.available = True
         elif availability < 80 and self.available:
-            print_alert("Website {} is no longer available".format(self.name))
+            print_alert("Website {} is no longer available, availability : {}%".format(self.name, int(availability)))
             self.available = False
 
     def run_check(self):

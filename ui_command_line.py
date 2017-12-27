@@ -2,17 +2,22 @@
 
 import urwid
 from manage_websites import Manage_websites
-from prints import print_info
+from prints import print_command
 
 
 class CommandLine(urwid.Edit):
+    """this class is the edit line where
+    the user can enter a command"""
 
     def __init__(self, websites):
+        """inits the command line"""
         self.websites = websites
         self.build_commands()
         super().__init__(("command", "> "))
 
     def build_commands(self):
+        """adds all the commands to a dictionary,
+        so that they can be used by the user later"""
         self.commands = {}
         self.commands["help"] = CommandLine.help
         self.commands["add"] = Manage_websites.add_website
@@ -22,6 +27,8 @@ class CommandLine(urwid.Edit):
         self.commands["display"] = Manage_websites.display_websites
 
     def keypress(self, size, key):
+        """if the key pressed is enter,
+        execute the command"""
         if key != "enter":
             return super().keypress(size, key)
         self.execute_command(self.edit_text)
@@ -30,11 +37,13 @@ class CommandLine(urwid.Edit):
     def help(self):
         """all the available commands and how to use them
         use : help"""
-        print_info("Available commands :")
+        print_command("Available commands :")
         for command in self.commands:
-            print_info("- {} : {}".format(command, self.commands[command].__doc__))
+            print_command("- {} : {}".format(command, self.commands[command].__doc__))
 
     def execute_command(self, command):
+        """execute the command if it is
+        a correct command"""
         L = command.split(" ")
         if len(L) == 0 or L[0] == "help":
             self.help()
@@ -42,7 +51,7 @@ class CommandLine(urwid.Edit):
             try:
                 self.commands[L[0]](self.websites, *L[1:])
             except TypeError:
-                print_info("Invalid use of command")
+                print_command("Invalid use of command")
         else:
-            print_info("Command {} does not exist".format(L[0]))
+            print_command("Command {} does not exist".format(L[0]))
 

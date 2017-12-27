@@ -9,6 +9,7 @@ class TextZone(urwid.Frame):
 
     __metaclass__ = urwid.MetaSignals
     signals = ["content_changed"]
+    max_texts = 200
 
     def __init__(self, title, style = "default"):
         """inits the Text zone with the title and
@@ -24,6 +25,8 @@ class TextZone(urwid.Frame):
         element to make autoscroll work"""
         self.walker.append(urwid.Text((self.style, txt)))
         #print(self.walker.focus)
+        if len(self.walker) >= self.max_texts:
+            del self.walker[0]
         self.txt_zone.set_focus(len(self.walker)-1)
         urwid.emit_signal(self, "content_changed")
 
