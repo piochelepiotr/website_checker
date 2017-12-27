@@ -5,6 +5,7 @@ import requests
 import time
 import response
 import bisect
+from prints import print_info
 
 
 def group_list(L):
@@ -29,7 +30,7 @@ response time (avg, min, max) : {}s {}s {}s
 error codes : {}""".format(
         name, availability, avg_resp_time, min_resp_time,
         max_resp_time, error_codes)
-    print(txt)
+    print_info(txt)
 
 
 class Website:
@@ -51,7 +52,7 @@ class Website:
         self.thread_check.daemon = True
         self.thread_check.start()
         if not self.check():
-            print("Impossible to reach Website, check the URL and your internet connection")
+            print_info("Impossible to reach Website, check the URL and your internet connection")
 
     def change_url(self, url):
         """change the url of the website"""
@@ -59,12 +60,12 @@ class Website:
         self.url = url
         self.responses = []
         if not self.check():
-            print("Impossible to reach Website, check the URL and your internet connection")
+            print_info("Impossible to reach Website, check the URL and your internet connection")
 
     def change_check_interval(self, check_interval):
         """change the time between two checks"""
         if check_interval <= 0:
-            print("Minimum check interval = 1s")
+            print_info("Minimum check interval = 1s")
             check_interval = 1
         self.check_interval = check_interval
 

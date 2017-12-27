@@ -3,6 +3,7 @@
 import website
 import time
 import threading
+from prints import print_info
 
 
 class Manage_websites:
@@ -24,45 +25,50 @@ class Manage_websites:
         self.thread_long_period.start()
 
     def add_website(self, name, url, check_interval):
-        """add a website to the list of websites to check."""
+        """add a website to the list of websites to check.
+        use : add name url check_interval"""
         if name in self.websites:
-            print("Website {} already exists.".format(name))
+            print_info("Website {} already exists.".format(name))
         else:
             self.websites[name] = website.Website(
                     url, int(check_interval), self.config)
 
     def remove_website(self, name):
-        """remove a website from the list of websites to check."""
+        """remove a website from the list of websites to check.
+        use : remove name"""
         if name in self.websites:
             del self.websites[name]
         else:
-            print("Website {} doesn't exist.".format(name))
+            print_info("Website {} doesn't exist.".format(name))
 
     def change_url(self, name, url):
-        """change the url of the website"""
+        """change the url of the website
+        use : change_url name new_url"""
         try:
             self.websites[name].change_url(url)
         except KeyError:
-            print("The website {} doesn't exist".format(name))
+            print_info("The website {} doesn't exist".format(name))
 
     def change_check_interval(self, name, check_interval):
-        """change the period between two checks"""
+        """change the period between two checks
+        use : change_check_interval name new_check_interval"""
         try:
             self.websites[name].change_check_interval(int(check_interval))
         except KeyError:
-            print("The website {} doesn't exist".format(name))
+            print_info("The website {} doesn't exist".format(name))
 
     def display_websites(self):
-        """Displays all the websites checked by the program"""
+        """Displays all the websites checked by the program
+        use : display"""
         for name in self.websites:
-            print("{} : {}".format(name, str(self.websites[name])))
+            print_info("{} : {}".format(name, str(self.websites[name])))
 
     def disp_short_period(self):
         """thread that every 10s,
         displays the stats for each website for the last 10m"""
         while True:
             if len(self.websites) > 0:
-                print("Statistics for the last 10m")
+                print_info("Statistics for the last 10m")
             for name in self.websites:
                 stats = self.websites[name].get_stats(10*60)
                 website.print_website_stats(name, *stats)
@@ -75,7 +81,7 @@ class Manage_websites:
         displays the stats for each website for the last hour"""
         while True:
             if len(self.websites) > 0:
-                print("Statistics for the last hour")
+                print_info("Statistics for the last hour")
             for name in self.websites:
                 stats = self.websites[name].get_stats(60*60)
                 website.print_website_stats(name, *stats)
@@ -91,6 +97,6 @@ class Manage_websites:
                 f.readline()
                 self.config = [int(x) for x in f.readline().split(",")]
         except FileNotFoundError:
-            print("Configuration file not found, using default configuration")
+            print_info("Configuration file not found, using default configuration")
         except ValueError:
-            print("Configuration file incorrect, using default configuration")
+            print_info("Configuration file incorrect, using default configuration")

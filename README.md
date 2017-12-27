@@ -2,5 +2,6 @@
 
 ## What I would improve
 
-* split the terminal in 3 : one for commands, one for alerts and one for information
+* add a completion for the commands with tab
+* use keyboards arrows to execute the last commands
 * add a code that checks if the url of the website is valid to help the user : for the moment, you need to enter http://www.

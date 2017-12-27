@@ -1,21 +1,25 @@
 #! /usr/bin/python3
 
 import urwid
-import command_line
-import text_zone
+from ui_command_line import CommandLine
+import prints
+import manage_websites
 
-palette = [
-        ('command', 'default,bold', 'default', 'bold'),
-        ('alert', 'dark red', 'default'),
-        ('title','black','dark cyan', 'standout')
-        ]
-
-class MainWindow(urwid.Frame):
+class MainShell(urwid.Frame):
     def __init__(self):
-        alerts = TextZone("Alerts", "alert")
-        infos = TextZone("Informations")
-        layout = urwid.Columns([alerts, infos])
-        command = Command()
-        super().__init__(layout, footer=command, focus_part="footer")
+        self.websites = manage_websites.Manage_websites()
+        self.infos = prints.infos
+        self.alerts = prints.alerts
+        self.layout = urwid.Columns([self.alerts, self.infos])
+        self.command = CommandLine(self.websites)
+        super().__init__(self.layout, footer=self.command, focus_part="footer")
 
-urwid.MainLoop(MainWindow(), palette).run()
+if __name__ == "__main__":
+    palette = [
+            ('command', 'default,bold', 'default', 'bold'),
+            ('alert', 'dark red', 'default'),
+            ('title','black','dark cyan', 'standout')
+            ]
+
+    main_shell = MainShell()
+    urwid.MainLoop(main_shell, palette).run()
