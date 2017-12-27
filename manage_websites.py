@@ -17,7 +17,11 @@ class Manage_websites:
         self.thread_short_period = threading.Thread(
                 target=Manage_websites.disp_short_period, args=(self,))
         self.thread_short_period.daemon = True
+        self.thread_long_period = threading.Thread(
+                target=Manage_websites.disp_long_period, args=(self,))
+        self.thread_long_period.daemon = True
         self.thread_short_period.start()
+        self.thread_long_period.start()
 
     def add_website(self, name, url, check_interval):
         """add a website to the list of websites to check."""
@@ -41,10 +45,10 @@ class Manage_websites:
         except KeyError:
             print("The website {} doesn't exist".format(name))
 
-    def change_chek_interval(self, name, url):
+    def change_check_interval(self, name, check_interval):
         """change the period between two checks"""
         try:
-            self.websites[name].change_check_interval(url)
+            self.websites[name].change_check_interval(int(check_interval))
         except KeyError:
             print("The website {} doesn't exist".format(name))
 
@@ -57,9 +61,25 @@ class Manage_websites:
         """thread that every 10s,
         displays the stats for each website for the last 10m"""
         while True:
+            if len(self.websites) > 0:
+                print("Statistics for the last 10m")
             for name in self.websites:
-                pass
+                stats = self.websites[name].get_stats(10*60)
+                website.print_website_stats(name, *stats)
+                #if availability is greater than 80% and status = not ok, then put the status at ok and print
+                #if availability is lower than 80% and status = ok, then put the status at not ok and print
             time.sleep(10)
+
+    def disp_long_period(self):
+        """thread that every 1m,
+        displays the stats for each website for the last hour"""
+        while True:
+            if len(self.websites) > 0:
+                print("Statistics for the last hour")
+            for name in self.websites:
+                stats = self.websites[name].get_stats(60*60)
+                website.print_website_stats(name, *stats)
+            time.sleep(60)
 
     def load_config(self):
         """loads the configuration file that indicates in what case

@@ -23,7 +23,13 @@ def group_list(L):
 def print_website_stats(
         name, availability, error_codes, avg_resp_time,
         min_resp_time, max_resp_time):
-    print("Website {} has ".format())
+    txt = """{}
+availability of {}%
+response time (avg, min, max) : {}s {}s {}s
+error codes : {}""".format(
+        name, availability, avg_resp_time, min_resp_time,
+        max_resp_time, error_codes)
+    print(txt)
 
 
 class Website:
@@ -45,7 +51,7 @@ class Website:
         self.thread_check.daemon = True
         self.thread_check.start()
         if not self.check():
-            print("Impossible to reach Website, are you sure of the URL ?")
+            print("Impossible to reach Website, check the URL and your internet connection")
 
     def change_url(self, url):
         """change the url of the website"""
@@ -53,10 +59,13 @@ class Website:
         self.url = url
         self.responses = []
         if not self.check():
-            print("Impossible to reach Website, are you sure of the URL ?")
+            print("Impossible to reach Website, check the URL and your internet connection")
 
     def change_check_interval(self, check_interval):
         """change the time between two checks"""
+        if check_interval <= 0:
+            print("Minimum check interval = 1s")
+            check_interval = 1
         self.check_interval = check_interval
 
     def check(self):
@@ -71,8 +80,8 @@ class Website:
             self.valid_website = False
             return False
         self.responses.append(response.Response(
-            r.elapsed.total_seconds(),
-            int(r.status_code), time.time()))
+            int(r.status_code), r.elapsed.total_seconds(),
+            time.time()))
         return True
 
     def run_check(self):
@@ -93,11 +102,11 @@ class Website:
         self.lock.acquire()
         start_index = bisect.bisect_left(self.responses, time.time() - period)
         responses = self.responses[start_index:]
-        resp_codes = [response.reponse_code for response in self.responses]
+        resp_codes = [response.response_code for response in self.responses]
         error_codes = group_list(resp_codes)
         sum_ok = sum([error_codes[code] for code in self.ok_responses if code in error_codes])
-        availability = sum_ok / sum(error_codes.values) * 100
-        resp_times = [response.respnse_time for response in responses]
+        availability = sum_ok / sum(error_codes.values()) * 100
+        resp_times = [response.response_time for response in responses]
         avg_resp_time = sum(resp_times)/len(resp_times)
         min_resp_time = min(resp_times)
         max_resp_time = max(resp_times)

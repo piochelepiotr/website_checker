@@ -18,4 +18,14 @@ class Response:
 
     def __gt__(self, other):
         """implemented > operator, for bisect search"""
-        return self.create_time > other.create_time
+        if isinstance(other, Response):
+            return self.create_time > other.create_time
+        elif isinstance(other, float):
+            return self.create_time > other
+
+    def __lt__(self, other):
+        """implemented > operator, for bisect search"""
+        if isinstance(other, Response):
+            return self.create_time < other.create_time
+        elif isinstance(other, float):
+            return self.create_time < other
