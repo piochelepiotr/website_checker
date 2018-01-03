@@ -54,4 +54,3 @@ class CommandLine(urwid.Edit):
                 print_command("Invalid use of command")
         else:
             print_command("Command {} does not exist".format(L[0]))
-

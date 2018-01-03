@@ -97,7 +97,7 @@ class Website:
         """check if the availability of the website is still
         above 80 (or still bellow according to self.available)"""
         availability, err, avg, m, M = self.get_stats(60*2)
-        if availability > 80 and  not self.available:
+        if availability > 80 and not self.available:
             print_alert("Website {} is once again available, availability : {}%".format(self.name, int(availability)))
             self.available = True
         elif availability < 80 and self.available:

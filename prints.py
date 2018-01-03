@@ -18,13 +18,16 @@ try:
 except NameError:
     command_out = TextZone("Command outputs")
 
+
 def print_info(txt):
     """prints an str the information window"""
     infos.add_text(txt)
 
+
 def print_alert(txt):
     """prints an str the alert window, adds the time at the beggining of the message"""
     alerts.add_text(str(time.ctime()) + " : " + txt)
+
 
 def print_command(txt):
     """prints an str in the command window"""

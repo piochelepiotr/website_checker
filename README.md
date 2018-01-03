@@ -2,6 +2,7 @@
 
 ## How to use the program
 
+* install urwid (it can be installed easly with pip)
 * launch main.py and enter commands (start by entering "help")
 * if you want to launch the test, launch test_alert.py
 
